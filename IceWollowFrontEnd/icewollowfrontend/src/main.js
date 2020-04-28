@@ -28,6 +28,7 @@ firebase.initializeApp(configOptions);
 
 firebase.auth().onAuthStateChanged(user => {
   store.dispatch("fetchUser", user);
+  store.dispatch("fetchServers", user);
 });
 
 firebase.getCurrentUser = () => {
@@ -51,8 +52,6 @@ router.beforeEach(async (to, from, next) => {
 library.add(faCog, faPlus);
 
 Vue.component("font-awesome-icon", FontAwesomeIcon);
-
-store.dispatch("fetchServers");
 store.dispatch("fetchFriends");
 
 new Vue({

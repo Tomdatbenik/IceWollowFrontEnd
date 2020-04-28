@@ -104,7 +104,14 @@ export default {
       this.$store.dispatch("toggleServerCreateModal", false);
     },
     addServer() {
-      this.$store.dispatch("createServer", this.serverName);
+      const server = {
+        name: this.serverName,
+        owner: { email: this.$store.getters.user.data.email }
+      };
+
+      console.log(server);
+
+      this.$store.dispatch("createServer", server);
       this.serverName = "";
       this.close();
     }

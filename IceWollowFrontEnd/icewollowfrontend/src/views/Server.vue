@@ -1,11 +1,18 @@
 <template>
   <div class="fancy-background">
+    <ServerSettings />
     <div class="channel-list float-left">
       <div class="container mb-2">
         <div class="row">
           <div class="col p-0">
             <h3 class="text-light mt-2 p-0 m-0 pb-2 text-left pl-3">
-              {{ server.name }}
+              {{ selectedServer.name }}
+              <div
+                class="unselectable float-right mr-2 server-settings-btn"
+                @click="ToggleServerSettings"
+              >
+                <font-awesome-icon icon="cog" />
+              </div>
             </h3>
           </div>
         </div>
@@ -18,13 +25,13 @@
         </h5>
 
         <div
-          v-for="channel in server.channels"
+          v-for="channel in selectedServer.channels"
           v-bind:key="channel.id"
           v-on:click="SetFocus($event)"
           ref="channel-list-item"
           class="col-12 text-light channel-list-item p-0"
         >
-          <div v-if="channel.type == 'text'">
+          <div v-if="channel.type == 'TEXT'">
             <h5 class="p-2 pl-4 unselectable text-left">
               {{ channel.name }}
             </h5>
@@ -46,13 +53,13 @@
         </h5>
 
         <div
-          v-for="channel in server.channels"
+          v-for="channel in selectedServer.channels"
           v-bind:key="channel.id"
           v-on:click="SetFocus($event)"
           ref="channel-list-item"
           class="col-12 text-light channel-list-item p-0"
         >
-          <div v-if="channel.type == 'voice'">
+          <div v-if="channel.type == 'VOICE'">
             <h5 class="p-2 pl-4 unselectable text-left">
               {{ channel.name }}
             </h5>
@@ -71,7 +78,7 @@
     </div>
     <div class="chat text-light">
       Server
-      {{ server }}
+      {{ selectedServer }}
     </div>
   </div>
 </template>
@@ -112,13 +119,17 @@
   width: 100%;
   height: 100vh;
 }
+
+.server-settings-btn {
+  cursor: pointer;
+}
 </style>
 
 <script>
 import { mapGetters } from "vuex";
+import ServerSettings from "../components/ServerSettings";
 
 export default {
-  props: ["server"],
   computed: {
     ...mapGetters({
       user: "user"
@@ -127,7 +138,7 @@ export default {
       servers: "servers"
     }),
     ...mapGetters({
-      server: "selectedServer"
+      selectedServer: "selectedServer"
     })
   },
   created: function() {
@@ -135,8 +146,10 @@ export default {
       this.$router.replace({ name: "dashboard" });
     }
   },
-  components: {},
   methods: {
+    ToggleServerSettings() {
+      this.$store.dispatch("toggleServerSettingsModal", true);
+    },
     SetFocus(event) {
       this.$refs["channel-list-item"].forEach(element => {
         element.classList.remove("channel-list-item-active");
@@ -144,6 +157,9 @@ export default {
 
       event.currentTarget.classList.add("channel-list-item-active");
     }
+  },
+  components: {
+    ServerSettings
   }
 };
 </script>

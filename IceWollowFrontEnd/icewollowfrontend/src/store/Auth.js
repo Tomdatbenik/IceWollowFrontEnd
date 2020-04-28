@@ -54,15 +54,11 @@ export default {
             email: user.email
           }
         }).then(function(response) {
-          if (response.data == null) {
-            axios
-              .post("http://localhost:8081/user/add", {
-                email: user.email,
-                displayName: user.displayName
-              })
-              .then(function(response) {
-                console.log(response);
-              });
+          if (response.data == "") {
+            axios.post("http://localhost:8081/user/add", {
+              email: user.email,
+              displayName: user.displayName
+            });
           } else {
             commit("SET_USER", {
               id: response.data.id,

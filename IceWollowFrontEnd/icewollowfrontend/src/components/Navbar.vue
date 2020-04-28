@@ -1,6 +1,6 @@
 <template>
   <nav class="nav-costum" v-if="user.loggedIn">
-    <createServer v-bind:display="this.displayServerCreate" />
+    <createServer />
 
     <router-link to="/dashboard" class="h-100 w-100"
       ><img
@@ -11,15 +11,14 @@
     <div class="server-list mt-1">
       <div v-for="server in servers" v-bind:key="server.id">
         <div class="mt-2 text-light" @click="selectServer(server)">
-          <img
-            v-if="server.src != ''"
+          <!-- <img
+            v-if="server.src != '' || server.src != null"
             :src="server.src"
             alt="logo"
             class="rounded-icon mb-1 nav-icon"
-          />
+          /> -->
           <div
             class="rounded-icon mb-1 ml-2 nav-icon bg-dark text-center unselectable"
-            v-else
           >
             <p class="server-short-name">
               {{ server.name[0].toUpperCase()
@@ -69,7 +68,10 @@ export default {
     },
     selectServer(server) {
       this.$store.dispatch("selectServer", server);
-      this.$router.replace({ name: "server" });
+
+      if (this.$router.currentRoute.name != "server") {
+        this.$router.replace({ name: "server" });
+      }
     }
   }
 };
