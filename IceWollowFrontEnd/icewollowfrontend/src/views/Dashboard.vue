@@ -1,5 +1,5 @@
 <template>
-  <div class="fancy-background">
+  <div class="fancy-background" v-if="user.loggedIn">
     <div class="user-list float-left">
       <div class="container mb-2">
         <div class="row">

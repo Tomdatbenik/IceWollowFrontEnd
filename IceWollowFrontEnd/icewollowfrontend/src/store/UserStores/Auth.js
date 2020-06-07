@@ -1,5 +1,6 @@
 import axios from "axios";
 //import * as firebase from "firebase";
+import store from "../index";
 
 export default {
   state: {
@@ -49,13 +50,13 @@ export default {
         //localhost:8081/user/getUserByEmail/?email=tomtrolt@gmail.com
         axios({
           method: "get",
-          url: "http://localhost:8081/user/getUserByEmail",
+          url: store.getters.userApp + "/user/getUserByEmail",
           params: {
             email: user.email
           }
         }).then(function(response) {
           if (response.data == "") {
-            axios.post("http://localhost:8081/user/add", {
+            axios.post( store.getters.userApp + "/user/add", {
               email: user.email,
               displayName: user.displayName
             });

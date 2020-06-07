@@ -10,7 +10,10 @@
     /></router-link>
     <div class="server-list mt-1">
       <div v-for="server in servers" v-bind:key="server.id">
-        <div class="mt-2 text-light" @click="selectServer(server)">
+        <div
+          class="mt-2 text-light"
+          @click="selectServer(server), subscribeToServer(server)"
+        >
           <!-- <img
             v-if="server.src != '' || server.src != null"
             :src="server.src"
@@ -41,7 +44,7 @@
 </template>
 <script>
 import { mapGetters } from "vuex";
-import createServer from "../components/CreateServer";
+import createServer from "../components/ServerAddOptions";
 
 export default {
   data() {
@@ -55,7 +58,7 @@ export default {
       user: "user"
     }),
     ...mapGetters({
-      // map `this.user` to `this.$store.getters.user`
+      // map `this.user` to `this.$store.getters.servers`
       servers: "servers"
     })
   },
@@ -72,6 +75,9 @@ export default {
       if (this.$router.currentRoute.name != "server") {
         this.$router.replace({ name: "server" });
       }
+    },
+    subscribeToServer(server) {
+      this.$store.dispatch("SendSubscribeToServerMessage", server.id);
     }
   }
 };

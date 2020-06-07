@@ -1,11 +1,13 @@
 import axios from "axios";
-// import store from "../store";
+import store from "../index";
+
 //import * as firebase from "firebase";
 
 export default {
   state: {
     servers: [],
-    selectedServer: null
+    selectedServer: null,
+    lastJoinedServerCode: ""
   },
   getters: {
     servers(state) {
@@ -31,6 +33,49 @@ export default {
           state.servers.splice(i);
         }
       }
+    },
+    SAVE_SERVERS(state, servers) {
+      state.servers = servers;
+    },
+    JOIN_SERVER(state, code) {
+      state.lastJoinedServerCode = code;
+
+      console.log(store.getters.user.data);
+
+      const user = {
+        id: store.getters.user.data.id,
+        displayName: store.getters.user.data.displayName,
+        email: store.getters.user.data.email
+      };
+
+      const joinServer = {
+        user: user,
+        code: code
+      };
+
+      const jsonJoinServer = JSON.stringify(joinServer);
+
+      axios
+        .put(store.getters.serverApp + "/server/join", jsonJoinServer, {
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json"
+          }
+        })
+        .then(() => {
+          store.dispatch("fetchServers", user);
+          console.log("Succesfully join server");
+        })
+        .catch(error => {
+          switch (error.response.status) {
+            case 422:
+              console.log("User already joined the server");
+              break;
+            case 404:
+              console.log("User or server doesn't exist");
+              break;
+          }
+        });
     }
   },
   actions: {
@@ -40,7 +85,7 @@ export default {
         console.log(user.email);
         axios({
           method: "get",
-          url: "http://localhost:8082" + "/server/getbyuser",
+          url: store.getters.serverApp + "/server/getbyuser",
           params: {
             email: user.email
           }
@@ -58,14 +103,13 @@ export default {
     selectServer({ commit }, server) {
       commit("SELECT_SERVER", server);
     },
-
     createServer({ commit }, server) {
       const sserver = JSON.stringify(server);
-      console.log(sserver);
+
       axios
         .request({
           method: "POST",
-          url: "http://localhost:8082" + "/server/add",
+          url: store.getters.serverApp + "/server/add",
           // headers: {
           //     authorization: `Bearer ${this.getters.Token}`,
           //     "Content-Type": "application/json"
@@ -85,7 +129,7 @@ export default {
       axios
         .request({
           method: "POST",
-          url: "http://localhost:8082" + "/server/leave",
+          url: store.getters.serverApp + "/server/leave",
           // headers: {
           //     authorization: `Bearer ${this.getters.Token}`,
           //     "Content-Type": "application/json"
@@ -106,7 +150,7 @@ export default {
       axios
         .request({
           method: "POST",
-          url: "http://localhost:8082" + "/channel/add",
+          url: store.getters.serverApp + "/channel/add",
           // headers: {
           //     authorization: `Bearer ${this.getters.Token}`,
           //     "Content-Type": "application/json"
@@ -121,6 +165,12 @@ export default {
             console.log(commit);
           }
         });
+    },
+    saveServers({ commit }, servers) {
+      commit("SAVE_SERVERS", servers);
+    },
+    joinServer({ commit }, code) {
+      commit("JOIN_SERVER", code);
     }
   }
 };

@@ -8,9 +8,10 @@
 
     <div class="profile"><profile v-bind:user="user"></profile></div>
 
-    <div class="fill">
+    <div class="fill" >
       <router-view />
     </div>
+    <SocketConnecterVue />
   </div>
 </template>
 
@@ -91,17 +92,19 @@
 import navbar from "./components/Navbar";
 import profile from "./components/User";
 import { mapGetters } from "vuex";
+import SocketConnecterVue from "./components/SocketConnecter.vue";
 
 export default {
   computed: {
     // map `this.user` to `this.$store.getters.user`
     ...mapGetters({
-      user: "user"
-    })
+      user: "user",
+    }),
   },
   components: {
     navbar,
-    profile
-  }
+    profile,
+    SocketConnecterVue,
+  },
 };
 </script>

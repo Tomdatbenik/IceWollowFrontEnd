@@ -1,5 +1,5 @@
 <template>
-  <div class="text-white user" v-if="user.data != null">
+  <div class="text-white user" v-if="user.loggedIn" >
     <img
       src="@/assets/logo.png"
       alt="logo"

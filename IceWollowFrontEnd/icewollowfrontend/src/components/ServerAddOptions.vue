@@ -5,7 +5,7 @@
         <div class="col-8 offset-2">
           <div class="card bg-dark">
             <div class="card-header">
-              <h4>Create server</h4>
+              <h4>Add server</h4>
             </div>
             <div class="card-body">
               <div class="row">
@@ -25,7 +25,12 @@
                     v-model="serverName"
                   />
                 </div>
-                <div class="col-2 offset-2">
+                <div class="col-2">
+                  <button class="btn btn-success mt-5" @click="addServer">
+                    Create
+                  </button>
+                </div>
+                <div class="col-2">
                   <div
                     class="rounded-icon server-icon-preview"
                     v-if="this.serverName.length > 1"
@@ -45,15 +50,39 @@
                 </div>
               </div>
 
-              <div class="row mt-2">
-                <div class="col-1 offset-8">
-                  <button class="btn btn-danger" @click="close">
-                    Close
-                  </button>
+              <div class="row">
+                <div class="col">
+                  <h4 class="text-light">Join server:</h4>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-4">
+                  <p class="m-0 p-1 float-right">
+                    Join code:
+                  </p>
+                </div>
+                <div class="col-4">
+                  <input
+                    type="text"
+                    class="fancy-input-bar p-2 float-left"
+                    placeholder="Server code"
+                    v-model="serverCode"
+                  />
                 </div>
                 <div class="col-2">
-                  <button class="btn btn-success" @click="addServer">
-                    Save
+                  <button
+                    class="btn btn-success float-left"
+                    @click="joinServer"
+                  >
+                    Join
+                  </button>
+                </div>
+              </div>
+
+              <div class="row mt-2">
+                <div class="col-2 offset-10">
+                  <button class="btn btn-danger" @click="close">
+                    Close
                   </button>
                 </div>
               </div>
@@ -90,7 +119,8 @@ import { mapGetters } from "vuex";
 export default {
   data() {
     return {
-      serverName: ""
+      serverName: "",
+      serverCode: ""
     };
   },
   computed: {
@@ -109,10 +139,13 @@ export default {
         owner: { email: this.$store.getters.user.data.email }
       };
 
-      console.log(server);
-
       this.$store.dispatch("createServer", server);
       this.serverName = "";
+      this.close();
+    },
+    joinServer() {
+      this.$store.dispatch("joinServer", this.serverCode);
+      this.serverCode = "";
       this.close();
     }
   }

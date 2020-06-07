@@ -72,6 +72,19 @@
                 </div>
               </div>
 
+              <div class="row mt-5">
+                <div class="col-6">
+                  <p class="text-light">
+                    Invite code:
+                  </p>
+                </div>
+                <div class="col-6">
+                  <p class="text-light text-left">
+                    {{ selectedServer.code }}
+                  </p>
+                </div>
+              </div>
+
               <div class="row mt-2">
                 <div class="col-1 offset-8">
                   <button class="btn btn-danger" @click="close">
@@ -156,6 +169,8 @@ export default {
           channel: this.channel,
           server: this.selectedServer
         });
+
+        this.$store.dispatch("toggleServerSettingsModal", false);
       }
     }
   }
