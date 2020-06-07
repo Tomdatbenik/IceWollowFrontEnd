@@ -48,7 +48,9 @@
         >
           Voice-channels
         </h5>
-
+        <div v-if="connectedToChannel">
+          <button v-on:click="UnSubscribeToChannel()">Leave</button>
+        </div>
         <div
           v-for="channel in selectedServer.voiceChannels"
           v-bind:key="channel.id"
@@ -139,6 +141,12 @@ import { mapGetters } from "vuex";
 import ServerSettings from "../components/ServerSettings";
 
 export default {
+  data: function() {
+    return {
+      connectedToChannel: false,
+      subscribedChannel: null
+    };
+  },
   computed: {
     ...mapGetters({
       user: "user"
@@ -172,9 +180,18 @@ export default {
       event.currentTarget.classList.add("channel-list-item-active");
     },
     SubscribeToChannel(channel) {
+      this.subscribedChannel = channel;
       this.$store.dispatch("disconnect_connections");
-
+      this.connectedToChannel = true;
       this.$store.dispatch("SendSubscribeToChannelMessage", channel.id);
+    },
+    UnSubscribeToChannel() {
+      this.$store.dispatch("disconnect_connections");
+      this.connectedToChannel = false;
+      this.$store.dispatch(
+        "SendUnSubscribeToChannelMessage",
+        this.subscribedChannel.id
+      );
     }
   },
   components: {

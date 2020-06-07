@@ -54,11 +54,22 @@ export default {
 
       store.dispatch("SendMessageToServerSocket", message);
     },
+    SEND_UNSUBSCRIBE_TO_CHANNEL_MESSAGE(state, channel_id) {
+      const message = {
+        user_id: store.getters.user.data.id,
+        channel_id: channel_id,
+        handler: "UnSubscribeChannelHandler"
+      };
+
+      state.LastSendMessage = message;
+
+      store.dispatch("SendMessageToServerSocket", message);
+    },
     SEND_INIT_WEB_RTC_ID_TO_CHANNEL(state, id) {
       const message = {
         user_id: store.getters.user.data.id,
         rtc_id: id,
-        handler: "InitIdHandler"
+        handler: "rtcIdHandler"
       };
 
       state.LastSendMessage = message;
@@ -75,6 +86,9 @@ export default {
     },
     SendSubscribeToChannelMessage({ commit }, channel_id) {
       commit("SEND_SUBSCRIBE_TO_CHANNEL_MESSAGE", channel_id);
+    },
+    SendUnSubscribeToChannelMessage({ commit }, channel_id) {
+      commit("SEND_UNSUBSCRIBE_TO_CHANNEL_MESSAGE", channel_id);
     },
     Send_init_web_rtc_id({ commit }, rtc_id) {
       commit("SEND_INIT_WEB_RTC_ID_TO_CHANNEL", rtc_id);
