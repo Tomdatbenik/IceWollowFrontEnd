@@ -7,7 +7,8 @@ export default {
   state: {
     servers: [],
     selectedServer: null,
-    lastJoinedServerCode: ""
+    lastJoinedServerCode: "",
+    lastLeftServer: null
   },
   getters: {
     servers(state) {
@@ -28,11 +29,23 @@ export default {
       state.servers = [];
     },
     REMOVE_SERVER(state, server) {
-      for (let i = 0; i < state.servers.length; i++) {
-        if (state.servers[i].id == server.id) {
-          state.servers.splice(i);
-        }
-      }
+      axios
+        .request({
+          method: "PUT",
+          url: store.getters.serverApp + "/server/leave",
+          // headers: {
+          //     authorization: `Bearer ${this.getters.Token}`,
+          //     "Content-Type": "application/json"
+          // },
+          data: {
+            user: store.getters.user.data,
+            server_id: server.id
+          }
+        })
+        .then(() => {
+          state.lastLeftServer = server;
+          store.dispatch("fetchServers", store.getters.user.data);
+        });
     },
     SAVE_SERVERS(state, servers) {
       state.servers = servers;
@@ -80,9 +93,10 @@ export default {
   },
   actions: {
     fetchServers({ commit }, user) {
+      console.log("Fetching servers");
+
       commit("CLEAR_LIST");
       if (user != null) {
-        console.log(user.email);
         axios({
           method: "get",
           url: store.getters.serverApp + "/server/getbyuser",
@@ -90,11 +104,7 @@ export default {
             email: user.email
           }
         }).then(function(response) {
-          console.log(commit);
-          console.log(response);
-
           response.data.forEach(server => {
-            console.log(server);
             commit("ADD_SERVER", server);
           });
         });
@@ -104,46 +114,30 @@ export default {
       commit("SELECT_SERVER", server);
     },
     createServer({ commit }, server) {
-      const sserver = JSON.stringify(server);
-
       axios
         .request({
           method: "POST",
           url: store.getters.serverApp + "/server/add",
-          // headers: {
-          //     authorization: `Bearer ${this.getters.Token}`,
-          //     "Content-Type": "application/json"
-          // },
-          params: {
-            server: sserver
+          data: {
+            name: server.name,
+            owner: store.getters.user.data
           }
         })
         .then(res => {
           if (res.data != null) {
             commit("ADD_SERVER", res.data);
           }
+        })
+        .catch(error => {
+          switch (error.response.status) {
+            case 400:
+              console.log("Name is to short or user doesn't exist");
+              break;
+          }
         });
     },
-    leaveServer({ commit }, { user, server }) {
-      console.log(server);
-      axios
-        .request({
-          method: "POST",
-          url: store.getters.serverApp + "/server/leave",
-          // headers: {
-          //     authorization: `Bearer ${this.getters.Token}`,
-          //     "Content-Type": "application/json"
-          // },
-          params: {
-            email: user.data.email,
-            serverid: server.id
-          }
-        })
-        .then(res => {
-          if (res.data == true) {
-            commit("REMOVE_SERVER", server);
-          }
-        });
+    leaveServer({ commit }, { server }) {
+      commit("REMOVE_SERVER", server);
     },
     createChannel({ commit }, { channel, server }) {
       channel.type = channel.type.toUpperCase();
