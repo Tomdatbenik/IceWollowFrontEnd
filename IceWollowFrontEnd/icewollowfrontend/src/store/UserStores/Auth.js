@@ -56,7 +56,7 @@ export default {
           }
         }).then(function(response) {
           if (response.data == "") {
-            axios.post( store.getters.userApp + "/user/add", {
+            axios.post(store.getters.userApp + "/user", {
               email: user.email,
               displayName: user.displayName
             });

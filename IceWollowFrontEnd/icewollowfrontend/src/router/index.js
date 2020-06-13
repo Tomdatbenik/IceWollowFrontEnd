@@ -29,10 +29,7 @@ const routes = [
   {
     path: "/dashboard",
     name: "dashboard",
-    component: Dashboard,
-    meta: {
-      requiresAuth: true
-    }
+    component: Dashboard
   },
   {
     path: "/server",

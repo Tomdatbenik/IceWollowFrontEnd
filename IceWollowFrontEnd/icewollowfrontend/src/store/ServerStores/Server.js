@@ -117,7 +117,7 @@ export default {
       axios
         .request({
           method: "POST",
-          url: store.getters.serverApp + "/server/add",
+          url: store.getters.serverApp + "/server",
           data: {
             name: server.name,
             owner: store.getters.user.data
@@ -144,20 +144,24 @@ export default {
       axios
         .request({
           method: "POST",
-          url: store.getters.serverApp + "/channel/add",
+          url: store.getters.serverApp + "/channel/",
           // headers: {
           //     authorization: `Bearer ${this.getters.Token}`,
           //     "Content-Type": "application/json"
           // },
-          params: {
+          data: {
             server_id: server.id,
-            channel: channel
+            name: channel.name,
+            type: channel.type
           }
         })
         .then(res => {
-          if (res.data == true) {
-            console.log(commit);
+          if (res.status == 200) {
+            store.dispatch("SendSubscribeToServerMessage", server.id);
           }
+        })
+        .catch(() => {
+          console.log("Something went wrong with: " + commit);
         });
     },
     saveServers({ commit }, servers) {
